@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My 3D Portfolio</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+
+    <!-- Official 3D Model Viewer -->
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #030712;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.05);
+            --accent-1: #3b82f6;
+            --accent-2: #8b5cf6;
+            --accent-3: #10b981;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Ambient Animated Mesh Background */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            background: #030712;
+        }
+
+        .ambient-bg::before,
+        .ambient-bg::after,
+        .ambient-bg-3 {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.5;
+            animation: float 20s infinite ease-in-out alternate;
+        }
+
+        .ambient-bg::before {
+            background: var(--accent-1);
+            width: 600px;
+            height: 600px;
+            top: -100px;
+            left: -100px;
+        }
+
+        .ambient-bg::after {
+            background: var(--accent-2);
+            width: 500px;
+            height: 500px;
+            bottom: -50px;
+            right: -100px;
+            animation-delay: -5s;
+        }
+
+        .ambient-bg-3 {
+            background: var(--accent-3);
+            width: 400px;
+            height: 400px;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(50px, -50px) scale(1.1);
+            }
+
+            100% {
+                transform: translate(-30px, 40px) scale(0.9);
+            }
+        }
+
+        /* Overlay texture */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+            opacity: 0.03;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            padding: 80px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #d1d5db;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-weight: 800;
+            font-size: clamp(3rem, 6vw, 5rem);
+            line-height: 1.1;
+            margin-bottom: 24px;
+            background: linear-gradient(to right, #ffffff, #a5b4fc, #bae6fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1.5px;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.25rem;
+            font-weight: 300;
+            max-width: 650px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* If there's an odd number of items, center the last row */
+        .gallery-grid {
+            /* We can use flexbox for a perfectly 'sorted' masonry or justified layout if we want,
+               but grid with auto-fit is great. To avoid left-aligned orphans, we can dynamically flex it. */
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .model-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            width: calc(33.333% - 27px);
+            /* 3 columns minus gap space */
+            min-width: 320px;
+            max-width: 420px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .model-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 24px;
+            padding: 2px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.05));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .model-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .model-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .model-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .model-card:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .model-card:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        .model-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(59, 130, 246, 0.15);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+        }
+
+        .model-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        h2 {
+            font-weight: 600;
+            font-size: 1.5rem;
+            color: #fff;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #10b981;
+        }
+
+        /* Size for 3D viewer */
+        .viewer-container {
+            position: relative;
+            width: 100%;
+            height: 340px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+        }
+
+        model-viewer {
+            width: 100%;
+            height: 100%;
+            outline: none;
+            --poster-color: transparent;
+        }
+
+        model-viewer:focus-visible {
+            outline: none;
+        }
+
+        /* Loading progress bar styling */
+        model-viewer::part(default-progress-bar) {
+            background-color: var(--accent-1);
+            height: 3px;
+            border-radius: 3px;
+        }
+
+        .section-title {
+            width: 100%;
+            margin: 60px 0 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            opacity: 0;
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: 0.2s;
+        }
+
+        .section-title h2 {
+            font-size: 2rem;
+            white-space: nowrap;
+            background: linear-gradient(to right, #ffffff, #9ca3af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-title .title-line {
+            height: 1px;
+            flex-grow: 1;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+        }
+
+        .showcase-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: 0.3s;
+        }
+
+        .video-wrapper,
+        .image-wrapper {
+            width: 100%;
+            max-width: 1100px;
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            padding: 8px;
+        }
+
+        .video-wrapper::before,
+        .image-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 24px;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.05));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .premium-media {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            border-radius: 16px;
+            display: block;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+        }
+
+        .image-wrapper .premium-media {
+            aspect-ratio: auto;
+            max-height: 800px;
+            object-fit: contain;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .image-wrapper:hover .premium-media {
+            transform: scale(1.01);
+        }
+
+        .media-description {
+            margin-top: 24px;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .media-description p {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            font-weight: 300;
+            line-height: 1.6;
+            transition: opacity 0.5s ease;
+        }
+
+        .carousel-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .carousel-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .prev-btn {
+            left: 20px;
+        }
+
+        .next-btn {
+            right: 20px;
+        }
+
+        .carousel-indicators {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: var(--accent-1);
+            box-shadow: 0 0 10px var(--accent-1);
+            transform: scale(1.2);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 1100px) {
+            .model-card {
+                width: calc(50% - 20px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 60px 20px;
+            }
+
+            .model-card {
+                width: 100%;
+            }
+
+            .viewer-container {
+                height: 300px;
+            }
+
+            .ambient-bg::before,
+            .ambient-bg::after {
+                width: 300px;
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="ambient-bg">
+        <div class="ambient-bg-3"></div>
+    </div>
+    <div class="noise-overlay"></div>
+
+    <div class="container">
+        <header>
+            <div class="badge">Interactive Experience</div>
+            <h1>Portfolio Experience</h1>
+            <p class="subtitle">Explore a curated cinematic collection of visual masterpieces ranging from continuous
+                seamless 3D renders out to high-fidelity interactive models.</p>
+        </header>
+
+        <!-- Video Slideshow Section -->
+        <div class="section-title">
+            <h2>Rendered Videos</h2>
+            <div class="title-line"></div>
+        </div>
+
+        <div class="showcase-container">
+            <div class="video-wrapper">
+                <video id="slideshow-video" autoplay muted playsinline class="premium-media"></video>
+            </div>
+            <div class="media-description">
+                <p id="video-description">A mesmerizing collection of 3D renders.</p>
+            </div>
+        </div>
+
+        <!-- Image Gallery Section -->
+        <div class="section-title">
+            <h2>Rendered Images</h2>
+            <div class="title-line"></div>
+        </div>
+
+        <div class="showcase-container">
+            <div class="image-wrapper carousel-container">
+                <button class="carousel-btn prev-btn" id="prev-img-btn" aria-label="Previous Image">❮</button>
+                <img id="carousel-image" src="Images/0094.png" alt="Concept Render" class="premium-media">
+                <button class="carousel-btn next-btn" id="next-img-btn" aria-label="Next Image">❯</button>
+            </div>
+            <div class="carousel-indicators" id="img-indicators">
+                <!-- Indicators injected via JS -->
+            </div>
+            <div class="media-description">
+                <p id="image-description">Intricate detail and atmospheric depth.</p>
+            </div>
+        </div>
+
+        <!-- Interactive 3D Models Section -->
+        <div class="section-title">
+            <h2>Interactive 3D Library</h2>
+            <div class="title-line"></div>
+        </div>
+
+        <div class="gallery-grid">
+            <div class="model-card">
+                <div class="card-header">
+                    <h2>Baseball Bat</h2>
+                    <div class="status-dot"></div>
+                </div>
+                <div class="viewer-container">
+                    <model-viewer src="models/baseball_bat.glb" auto-rotate camera-controls shadow-intensity="1"
+                        alt="A 3D model of a Baseball Bat" interaction-prompt="none"></model-viewer>
+                </div>
+            </div>
+
+            <div class="model-card">
+                <div class="card-header">
+                    <h2>Froggo</h2>
+                    <div class="status-dot"></div>
+                </div>
+                <div class="viewer-container">
+                    <model-viewer src="models/froggo.glb" auto-rotate camera-controls shadow-intensity="1"
+                        alt="A 3D frog model" interaction-prompt="none"></model-viewer>
+                </div>
+            </div>
+
+            <div class="model-card">
+                <div class="card-header">
+                    <h2>Grass</h2>
+                    <div class="status-dot"></div>
+                </div>
+                <div class="viewer-container">
+                    <model-viewer src="models/grass.glb" auto-rotate camera-controls shadow-intensity="1"
+                        alt="A 3D model of grass" interaction-prompt="none"></model-viewer>
+                </div>
+            </div>
+
+            <div class="model-card">
+                <div class="card-header">
+                    <h2>Pine Tree</h2>
+                    <div class="status-dot"></div>
+                </div>
+                <div class="viewer-container">
+                    <model-viewer src="models/low_poli_pineTree.glb" auto-rotate camera-controls shadow-intensity="1"
+                        alt="A 3D model of a Pine Tree" interaction-prompt="none"></model-viewer>
+                </div>
+            </div>
+
+            <div class="model-card">
+                <div class="card-header">
+                    <h2>Table</h2>
+                    <div class="status-dot"></div>
+                </div>
+                <div class="viewer-container">
+                    <model-viewer src="models/TABLE.glb" auto-rotate camera-controls shadow-intensity="1"
+                        alt="A 3D model of a Table" interaction-prompt="none"></model-viewer>
+                </div>
+            </div>
+            <div class="model-card">
+                <div class="card-header">
+                    <h2>Ink bottle</h2>
+                    <div class="status-dot"></div>
+                </div>
+                <div class="viewer-container">
+                    <model-viewer src="models/ink.glb" auto-rotate camera-controls shadow-intensity="1"
+                        alt="A 3D model of an ink bottle" interaction-prompt="none"></model-viewer>
+                </div>
+            </div>
+        </div>
+    </div> <!-- Close .container -->
+
+    <script>
+        const videos = [
+            { src: 'Videos/0001-0540.mp4', desc: 'A stunning showcase of cinematic 3D lighting and materials.' },
+            { src: 'Videos/Crowdeye_logo0001-0120.mp4', desc: 'Sleek and dynamic logo animation sequence.' },
+            { src: 'Videos/crystal0001-0120.mp4', desc: 'Intricate refractive glass rendering and visual elegance.' },
+            { src: 'Videos/dummy.mp4', desc: 'High-fidelity character rigging and animation mechanics.' }
+        ];
+        let currentVideoIdx = 0;
+        const videoElement = document.getElementById('slideshow-video');
+        const descElement = document.getElementById('video-description');
+
+        function playNextVideo() {
+            videoElement.style.opacity = '0';
+            descElement.style.opacity = '0';
+
+            setTimeout(() => {
+                videoElement.src = videos[currentVideoIdx].src;
+                descElement.textContent = videos[currentVideoIdx].desc;
+
+                videoElement.play().then(() => {
+                    videoElement.style.opacity = '1';
+                    descElement.style.opacity = '1';
+                }).catch(err => {
+                    console.error("Autoplay likely prevented:", err);
+                    videoElement.style.opacity = '1';
+                    descElement.style.opacity = '1';
+                });
+
+                currentVideoIdx = (currentVideoIdx + 1) % videos.length;
+            }, 500); // Wait for fade out
+        }
+
+        videoElement.addEventListener('ended', playNextVideo);
+
+        // Start playback
+        playNextVideo();
+        // --- Image Carousel Logic --- //
+        const images = [
+            { src: 'Images/0094.png', desc: 'Concept Render showcasing lighting and depth.' },
+            { src: 'Images/hourglass0001.png', desc: 'Detailed hourglass asset study with dynamic glass refraction.' },
+            { src: 'Images/robber0006.png', desc: 'Character concept: The Robber, emphasizing low poly charm.' },
+            { src: 'Images/room_scene_REVAMP0001.png', desc: 'Revamped architectural visualization scene with volumetric lighting.' }
+        ];
+
+        let currentImgIdx = 0;
+        const imgElement = document.getElementById('carousel-image');
+        const imgDescElement = document.getElementById('image-description');
+        const indicatorsContainer = document.getElementById('img-indicators');
+
+        images.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.className = `indicator ${index === 0 ? 'active' : ''}`;
+            dot.addEventListener('click', () => goToImage(index));
+            indicatorsContainer.appendChild(dot);
+        });
+
+        function updateImageDisplay() {
+            imgElement.style.opacity = '0';
+            imgDescElement.style.opacity = '0';
+
+            setTimeout(() => {
+                imgElement.src = images[currentImgIdx].src;
+                imgDescElement.textContent = images[currentImgIdx].desc;
+
+                const dots = document.querySelectorAll('.indicator');
+                dots.forEach((dot, idx) => {
+                    dot.classList.toggle('active', idx === currentImgIdx);
+                });
+
+                imgElement.style.transition = 'opacity 0.5s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+
+                imgElement.style.opacity = '1';
+                imgDescElement.style.opacity = '1';
+            }, 300);
+        }
+
+        function goToImage(index) {
+            currentImgIdx = index;
+            updateImageDisplay();
+        }
+
+        document.getElementById('prev-img-btn').addEventListener('click', () => {
+            currentImgIdx = (currentImgIdx - 1 + images.length) % images.length;
+            updateImageDisplay();
+        });
+
+        document.getElementById('next-img-btn').addEventListener('click', () => {
+            currentImgIdx = (currentImgIdx + 1) % images.length;
+            updateImageDisplay();
+        });
+    </script>
+</body>
+
+</html>
