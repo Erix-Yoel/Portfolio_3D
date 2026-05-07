@@ -14,8 +14,8 @@
     <!-- Official 3D Model Viewer -->
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
-    <!-- Three.js for 3D Background Intro -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Devicons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
 
     <style>
         :root {
@@ -444,6 +444,13 @@
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
             padding: 8px;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .video-wrapper:hover,
+        .image-wrapper:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(59, 130, 246, 0.15);
         }
 
         .video-wrapper::before,
@@ -603,20 +610,129 @@
                 height: 300px;
             }
         }
+
+        /* Skills and Projects Section */
+        .skills-projects-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            width: 100%;
+            margin-bottom: 60px;
+            opacity: 0;
+            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: 0.4s;
+        }
+
+        .skills-section, .projects-section {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.01) 100%);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skills-section:hover, .projects-section:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(139, 92, 246, 0.15);
+        }
+
+        .skills-section h3, .projects-section h3 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            background: linear-gradient(to right, #ffffff, #c4b5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .skills-icons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: flex-start;
+        }
+
+        .skill-icon {
+            font-size: 4rem;
+            color: #d1d5db;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .skill-icon span {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .skill-icon:hover {
+            transform: scale(1.15) translateY(-5px);
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        .skill-icon.unity:hover { color: #fff; }
+        .skill-icon.python:hover { color: #3776AB; }
+        .skill-icon.java:hover { color: #007396; }
+        .skill-icon.csharp:hover { color: #239120; }
+        .skill-icon.flutter:hover { color: #02569B; }
+
+        .project-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .project-item {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .project-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(10px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .project-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .project-desc {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 900px) {
+            .skills-projects-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
 <body>
 
-    <canvas id="bg-canvas"></canvas>
-
-    <div class="intro-content" id="intro">
-        <h1>Welcome to My 3D Portfolio</h1>
-        <p>Scroll down to explore</p>
-        <div class="scroll-indicator">↓</div>
-    </div>
-
-    <div class="ambient-bg" id="portfolio-bg">
+    <div class="ambient-bg active" id="portfolio-bg">
         <div class="ambient-bg-3"></div>
     </div>
     <div class="noise-overlay"></div>
@@ -746,6 +862,62 @@
                 </div>
             </div>
         </div>
+
+        <!-- Skills and Projects Section -->
+        <div class="section-title">
+            <h2>Skills & Projects</h2>
+            <div class="title-line"></div>
+        </div>
+
+        <div class="skills-projects-grid">
+            <div class="skills-section">
+                <h3>Proficient In</h3>
+                <div class="skills-icons">
+                    <div class="skill-icon unity">
+                        <i class="devicon-unity-plain"></i>
+                        <span>Unity</span>
+                    </div>
+                    <div class="skill-icon python">
+                        <i class="devicon-python-plain"></i>
+                        <span>Python</span>
+                    </div>
+                    <div class="skill-icon java">
+                        <i class="devicon-java-plain"></i>
+                        <span>Java</span>
+                    </div>
+                    <div class="skill-icon csharp">
+                        <i class="devicon-csharp-plain"></i>
+                        <span>C#</span>
+                    </div>
+                    <div class="skill-icon flutter">
+                        <i class="devicon-flutter-plain"></i>
+                        <span>Flutter</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="projects-section">
+                <h3>Featured Projects</h3>
+                <ul class="project-list">
+                    <li class="project-item">
+                        <div class="project-title">CrowdEye Go</div>
+                        <div class="project-desc">Mobile app made with Flutter</div>
+                    </li>
+                    <li class="project-item">
+                        <div class="project-title">Slimic</div>
+                        <div class="project-desc">A Unity Game</div>
+                    </li>
+                    <li class="project-item">
+                        <div class="project-title">Airplane Route Organizing System</div>
+                        <div class="project-desc">Built with Python</div>
+                    </li>
+                    <li class="project-item">
+                        <div class="project-title">Traffic Counting in a Junction System</div>
+                        <div class="project-desc">Built with Python</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div> <!-- Close .container -->
 
     <script>
@@ -838,146 +1010,6 @@
         document.getElementById('next-img-btn').addEventListener('click', () => {
             currentImgIdx = (currentImgIdx + 1) % images.length;
             updateImageDisplay();
-        });
-
-        // --- Three.js 3D Intro & Theme Transition Logic --- //
-        const canvas = document.getElementById('bg-canvas');
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setSize(window.innerWidth, window.innerHeight);
-
-        // We want to fly "forward"
-        camera.position.z = 200;
-
-        // 1. Add Starfield (Particles)
-        const starsGeometry = new THREE.BufferGeometry();
-        const starsCount = 3000;
-        const posArray = new Float32Array(starsCount * 3);
-
-        for (let i = 0; i < starsCount * 3; i += 3) {
-            // Spread deeply in Z, tightly in X and Y
-            posArray[i] = (Math.random() - 0.5) * 800;     // X
-            posArray[i + 1] = (Math.random() - 0.5) * 800;   // Y
-            posArray[i + 2] = (Math.random() - 0.5) * 2000;  // Z
-        }
-
-        starsGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-        const starsMaterial = new THREE.PointsMaterial({
-            size: 2,
-            color: 0xffffff,
-            transparent: true,
-            opacity: 0.8,
-            sizeAttenuation: true
-        });
-
-        const starMesh = new THREE.Points(starsGeometry, starsMaterial);
-        scene.add(starMesh);
-
-        // 2. Add Floating Wireframe Shapes
-        const geoCount = 50;
-        const geometries = [];
-        const geoMaterials = new THREE.MeshBasicMaterial({
-            color: 0x3b82f6,
-            wireframe: true,
-            transparent: true,
-            opacity: 0.15
-        });
-
-        for (let i = 0; i < geoCount; i++) {
-            const geometry = new THREE.IcosahedronGeometry(Math.random() * 20 + 10, 0);
-            const mesh = new THREE.Mesh(geometry, geoMaterials);
-
-            // Random positions
-            mesh.position.x = (Math.random() - 0.5) * 600;
-            mesh.position.y = (Math.random() - 0.5) * 600;
-            mesh.position.z = (Math.random() - 0.5) * 1500;
-
-            // Random rotations
-            mesh.rotation.x = Math.random() * Math.PI;
-            mesh.rotation.y = Math.random() * Math.PI;
-
-            scene.add(mesh);
-            geometries.push(mesh);
-        }
-
-        // Animation Loop
-        function animate() {
-            requestAnimationFrame(animate);
-
-            // Move particles to simulate infinite tunnel when camera moves
-            const positions = starMesh.geometry.attributes.position.array;
-            for (let i = 0; i < starsCount * 3; i += 3) {
-                // If camera passed the particle (scrolling down)
-                if (positions[i + 2] > camera.position.z + 200) {
-                    positions[i + 2] -= 2000;
-                }
-                // If camera backed away from particle (scrolling up)
-                else if (positions[i + 2] < camera.position.z - 1800) {
-                    positions[i + 2] += 2000;
-                }
-            }
-            starMesh.geometry.attributes.position.needsUpdate = true;
-
-            // Rotate and wrap geometry shapes
-            geometries.forEach(mesh => {
-                mesh.rotation.x += 0.002;
-                mesh.rotation.y += 0.002;
-
-                if (mesh.position.z > camera.position.z + 200) {
-                    mesh.position.z -= 2000;
-                } else if (mesh.position.z < camera.position.z - 1800) {
-                    mesh.position.z += 2000;
-                }
-            });
-
-            // Subtle rotation for stars
-            starMesh.rotation.z += 0.0002;
-
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        // 3. Scroll Reactivity & Theme Transition
-        const introContent = document.getElementById('intro');
-        const portfolioBg = document.getElementById('portfolio-bg');
-
-        window.addEventListener('scroll', () => {
-            const t = window.scrollY;
-
-            // Move camera forward through the space strictly based on scroll
-            camera.position.z = 200 - (t * 0.8);
-
-            // Slight rotation effect on scroll
-            starMesh.rotation.y = t * 0.0001;
-
-            // Fade and move intro text
-            const introOpacity = 1 - (t / 500);
-            if (introOpacity >= 0) {
-                introContent.style.opacity = introOpacity;
-                introContent.style.transform = `translateY(${t * 0.5}px)`;
-                introContent.style.pointerEvents = 'auto';
-            } else {
-                introContent.style.opacity = 0;
-                introContent.style.pointerEvents = 'none';
-            }
-
-            // Theme transition
-            // Trigger activation of ambient glowing background when scrolling past intro
-            if (t > window.innerHeight * 0.6) {
-                portfolioBg.classList.add('active');
-            } else {
-                portfolioBg.classList.remove('active');
-            }
-        });
-
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
     </script>
