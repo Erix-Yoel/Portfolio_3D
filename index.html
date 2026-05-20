@@ -332,6 +332,18 @@
             animation-delay: 0.5s;
         }
 
+        .model-card:nth-child(6) {
+            animation-delay: 0.6s;
+        }
+
+        .model-card:nth-child(7) {
+            animation-delay: 0.7s;
+        }
+
+        .model-card:nth-child(8) {
+            animation-delay: 0.8s;
+        }
+
         .model-card:hover {
             transform: translateY(-8px) scale(1.02);
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(59, 130, 246, 0.15);
@@ -721,6 +733,81 @@
             font-size: 1.05rem;
             line-height: 1.5;
         }
+
+        /* Link styling to preserve layout and expand clickable area */
+        .project-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            margin: -20px;
+            padding: 20px;
+            border-radius: 16px;
+        }
+
+        /* Base styles for interactive projects */
+        .project-item.interactive-project {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Gallery tag animation */
+        .gallery-tag {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-left: auto;
+            opacity: 0.5;
+            transform: translateX(5px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .project-item.interactive-project:hover .gallery-tag {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Slimic specific styling */
+        .project-item.slimic-project .gallery-tag {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .project-item.slimic-project:hover {
+            transform: translateX(12px) scale(1.01);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%) !important;
+            border-color: rgba(16, 185, 129, 0.4) !important;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.45), 0 0 20px rgba(16, 185, 129, 0.25) !important;
+        }
+
+        .project-item.slimic-project:hover .project-title {
+            color: #10b981;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+
+        /* XR World Explorer specific styling */
+        .project-item.xr-project .gallery-tag {
+            background: rgba(59, 130, 246, 0.15);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .project-item.xr-project:hover {
+            transform: translateX(12px) scale(1.01);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%) !important;
+            border-color: rgba(59, 130, 246, 0.4) !important;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.45), 0 0 20px rgba(59, 130, 246, 0.25) !important;
+        }
+
+        .project-item.xr-project:hover .project-title {
+            color: #3b82f6;
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+        }
         
         @media (max-width: 900px) {
             .skills-projects-grid {
@@ -793,7 +880,7 @@
                 </div>
                 <div class="viewer-container">
                     <model-viewer src="models/baseball_bat.glb" auto-rotate camera-controls shadow-intensity="1"
-                        alt="A 3D model of a Baseball Bat" interaction-prompt="none"></model-viewer>
+                        environment-image="neutral" alt="A 3D model of a Baseball Bat" interaction-prompt="none"></model-viewer>
                 </div>
             </div>
 
@@ -804,7 +891,7 @@
                 </div>
                 <div class="viewer-container">
                     <model-viewer src="models/froggo.glb" auto-rotate camera-controls shadow-intensity="1"
-                        alt="A 3D frog model" interaction-prompt="none"></model-viewer>
+                        environment-image="neutral" alt="A 3D frog model" interaction-prompt="none"></model-viewer>
                 </div>
             </div>
 
@@ -815,7 +902,7 @@
                 </div>
                 <div class="viewer-container">
                     <model-viewer src="models/grass.glb" auto-rotate camera-controls shadow-intensity="1"
-                        alt="A 3D model of grass" interaction-prompt="none"></model-viewer>
+                        environment-image="neutral" alt="A 3D model of grass" interaction-prompt="none"></model-viewer>
                 </div>
             </div>
 
@@ -826,7 +913,7 @@
                 </div>
                 <div class="viewer-container">
                     <model-viewer src="models/low_poli_pineTree.glb" auto-rotate camera-controls shadow-intensity="1"
-                        alt="A 3D model of a Pine Tree" interaction-prompt="none"></model-viewer>
+                        environment-image="neutral" alt="A 3D model of a Pine Tree" interaction-prompt="none"></model-viewer>
                 </div>
             </div>
 
@@ -837,7 +924,7 @@
                 </div>
                 <div class="viewer-container">
                     <model-viewer src="models/TABLE.glb" auto-rotate camera-controls shadow-intensity="1"
-                        alt="A 3D model of a Table" interaction-prompt="none"></model-viewer>
+                        environment-image="neutral" alt="A 3D model of a Table" interaction-prompt="none"></model-viewer>
                 </div>
             </div>
             <div class="model-card">
@@ -847,7 +934,7 @@
                 </div>
                 <div class="viewer-container">
                     <model-viewer src="models/ink.glb" auto-rotate camera-controls shadow-intensity="1"
-                        alt="A 3D model of an ink bottle" interaction-prompt="none"></model-viewer>
+                        environment-image="neutral" alt="A 3D model of an ink bottle" interaction-prompt="none"></model-viewer>
                 </div>
             </div>
 
@@ -858,7 +945,18 @@
                 </div>
                 <div class="viewer-container">
                     <model-viewer src="models/Vase.glb" auto-rotate camera-controls shadow-intensity="1"
-                        alt="A 3D model of a Vase" interaction-prompt="none"></model-viewer>
+                        environment-image="neutral" alt="A 3D model of a Vase" interaction-prompt="none"></model-viewer>
+                </div>
+            </div>
+
+            <div class="model-card">
+                <div class="card-header">
+                    <h2>Katana</h2>
+                    <div class="status-dot"></div>
+                </div>
+                <div class="viewer-container">
+                    <model-viewer src="models/KATANA.glb" auto-rotate camera-controls shadow-intensity="1"
+                        environment-image="neutral" alt="A 3D model of a Katana" interaction-prompt="none"></model-viewer>
                 </div>
             </div>
         </div>
@@ -903,9 +1001,23 @@
                         <div class="project-title">CrowdEye Go</div>
                         <div class="project-desc">Mobile app made with Flutter</div>
                     </li>
-                    <li class="project-item">
-                        <div class="project-title">Slimic</div>
-                        <div class="project-desc">A Unity Game</div>
+                    <li class="project-item interactive-project slimic-project">
+                        <a href="slimic.html" class="project-link">
+                            <div class="project-title">
+                                Slimic
+                                <span class="gallery-tag">View Gallery →</span>
+                            </div>
+                            <div class="project-desc">A Unity Game</div>
+                        </a>
+                    </li>
+                    <li class="project-item interactive-project xr-project">
+                        <a href="xr-world-explorer.html" class="project-link">
+                            <div class="project-title">
+                                XR World Explorer
+                                <span class="gallery-tag">View Gallery →</span>
+                            </div>
+                            <div class="project-desc">Built with Unity</div>
+                        </a>
                     </li>
                     <li class="project-item">
                         <div class="project-title">Airplane Route Organizing System</div>
@@ -962,7 +1074,8 @@
             { src: 'Images/0094.png', desc: 'Concept Render showcasing lighting and depth.' },
             { src: 'Images/hourglass0001.png', desc: 'Detailed hourglass asset study with dynamic glass refraction.' },
             { src: 'Images/robber0006.png', desc: 'Character concept: The Robber, emphasizing low poly charm.' },
-            { src: 'Images/room_scene_REVAMP0001.png', desc: 'Revamped architectural visualization scene with volumetric lighting.' }
+            { src: 'Images/room_scene_REVAMP0001.png', desc: 'Revamped architectural visualization scene with volumetric lighting.' },
+            { src: 'Images/0001.png', desc: 'Katana: Precision 3D model showcasing sharp blade geometry and ornate hilt styling.' }
         ];
 
         let currentImgIdx = 0;
@@ -1011,6 +1124,40 @@
             currentImgIdx = (currentImgIdx + 1) % images.length;
             updateImageDisplay();
         });
+
+        // --- Katana Dynamic Textures Logic --- //
+        const katanaViewer = document.querySelector('model-viewer[src="models/KATANA.glb"]');
+        if (katanaViewer) {
+            const applyKatanaTextures = async () => {
+                const materials = katanaViewer.model.materials;
+                const textureMap = {
+                    'circly_1': 'models/circly_1_katana.png',
+                    'handle': 'models/handle_katana.png',
+                    'metal': 'models/metal_katana.png',
+                    'stripes': 'models/stripes_katana.png'
+                };
+                
+                for (const material of materials) {
+                    const name = material.name.toLowerCase();
+                    if (textureMap[name]) {
+                        try {
+                            const texture = await katanaViewer.createTexture(textureMap[name]);
+                            if (material.pbrMetallicRoughness && material.pbrMetallicRoughness.baseColorTexture) {
+                                material.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
+                            }
+                        } catch (err) {
+                            console.error(`Error applying texture ${textureMap[name]} to material ${material.name}:`, err);
+                        }
+                    }
+                }
+            };
+
+            if (katanaViewer.loaded) {
+                applyKatanaTextures();
+            } else {
+                katanaViewer.addEventListener('load', applyKatanaTextures);
+            }
+        }
 
     </script>
 </body>
